@@ -1,0 +1,97 @@
+/* Base Styles */
+body {
+  margin: 0;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f6f8;
+  color: #172b4d;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Layout Helpers */
+.full-height {
+  height: 100vh;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.scrollable {
+  overflow-y: auto;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Animation Utilities */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Chart and Visualization Styles */
+.chart-container {
+  width: 100%;
+  height: 300px;
+  padding: 8px;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  position: relative;
+}
+
+/* Data Grid Overrides */
+.MuiDataGrid-root .MuiDataGrid-cell:focus,
+.MuiDataGrid-root .MuiDataGrid-cell:focus-within {
+  outline: none !important;
+}
+
+/* Dashboard Widget Styles */
+.widget-card {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.widget-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Override link styles */
+a {
+  text-decoration: none;
+  color: #1976d2;
+}
+
+a:hover {
+  text-decoration: underline;
+}

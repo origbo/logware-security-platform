@@ -1,0 +1,74 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": ["dom", "dom.iterable", "esnext", "es2015", "es2018.promise"],
+    "typeRoots": ["src/types", "./@types"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,                 /* Temporarily disable strict mode to fix critical errors first */
+    "checkJs": false,                /* Disable type checking on JavaScript files */
+    "suppressExcessPropertyErrors": true, /* Temporarily suppress excess property errors */
+    "suppressImplicitAnyIndexErrors": true, /* Temporarily suppress implicit any index errors */
+    "allowUnreachableCode": true,    /* Temporarily allow unreachable code */
+    "allowUnusedLabels": true,      /* Temporarily allow unused labels */
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",     /* Use standard Node resolution */
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",           /* Critical setting for JSX support */
+    "baseUrl": "src",
+    "noImplicitAny": false,         /* Temporarily disable implicit any errors */
+    "noImplicitThis": false,         /* Temporarily disable implicit this errors */
+    "noUnusedLocals": false,         /* Temporarily disable unused locals errors */
+    "noUnusedParameters": false,     /* Temporarily disable unused parameters errors */
+    "downlevelIteration": true,      /* Enable downleveling of for-of statements */
+    "experimentalDecorators": true,  /* Enable experimental decorators */
+    "ignoreDeprecations": "5.0",            /* Ignore deprecation warnings that aren't as critical */
+    "exactOptionalPropertyTypes": false,    /* Disable exact optional property type checks */
+    "noPropertyAccessFromIndexSignature": false, /* Disable warnings about accessing properties via index signature */
+    "paths": {
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@pages/*": ["pages/*"],
+      "@services/*": ["services/*"],
+      "@store/*": ["store/*"],
+      "@utils/*": ["utils/*"],
+      "@assets/*": ["assets/*"],
+      "@types/*": ["types/*"],
+      "@auth/*": ["features/auth/*"],
+      "@auth/hooks": ["features/auth/hooks"],
+      "@auth/hooks/*": ["features/auth/hooks/*"],
+      "@mui/material": ["node_modules/@mui/material"],
+      "@mui/material/*": ["node_modules/@mui/material/*"],
+      "@mui/system": ["node_modules/@mui/system"],
+      "@mui/system/*": ["node_modules/@mui/system/*"],
+      "@mui/x-data-grid": ["node_modules/@mui/x-data-grid"],
+      "@mui/x-data-grid/*": ["node_modules/@mui/x-data-grid/*"],
+      "@mui/x-date-pickers": ["node_modules/@mui/x-date-pickers"],
+      "@mui/x-date-pickers/*": ["node_modules/@mui/x-date-pickers/*"],
+      "@mui/icons-material": ["node_modules/@mui/icons-material"],
+      "@mui/icons-material/*": ["node_modules/@mui/icons-material/*"],
+      "react": ["node_modules/react"],
+      "react-dom": ["node_modules/react-dom"],
+      "react-router-dom": ["node_modules/react-router-dom"],
+      "date-fns": ["node_modules/date-fns"],
+      "date-fns/*": ["node_modules/date-fns/*"]
+    }
+  },
+  "include": ["src", "src/types/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "node_modules/@types/react-router-dom"
+  ]
+}

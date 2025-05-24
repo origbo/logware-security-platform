@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node16",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@mui/material": ["./node_modules/@mui/material"],
+      "@mui/material/*": ["./node_modules/@mui/material"],
+      "@mui/system/*": ["./node_modules/@mui/system"],
+      "@mui/icons-material": ["./node_modules/@mui/icons-material"],
+      "@mui/icons-material/*": ["./node_modules/@mui/icons-material"],
+      "react": ["./node_modules/react"],
+      "react-dom": ["./node_modules/react-dom"],
+      "date-fns/*": ["./node_modules/date-fns"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types",
+      "../frontend/src/types"
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

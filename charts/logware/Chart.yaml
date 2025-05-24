@@ -1,0 +1,16 @@
+apiVersion: v2
+name: logware
+description: A Helm chart for the Logware Security Platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+icon: https://logware.example.com/logo.png
+maintainers:
+  - name: Logware Team
+    email: team@logware.example.com
+keywords:
+  - security
+  - logging
+  - monitoring
+  - training
+  - documentation

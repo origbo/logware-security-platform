@@ -1,0 +1,193 @@
+name: Logware Security Platform CI/CD
+
+# Define environment variables for the workflow
+env:
+  DOCKER_REGISTRY: docker.io
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Lint
+        run: |
+          cd frontend
+          npm run lint
+      
+      - name: Unit Tests
+        run: |
+          cd frontend
+          npm test -- --coverage
+      
+      - name: Integration Tests
+        run: |
+          cd integration-tests
+          npm ci
+          npm test
+      
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+      
+      - name: E2E Tests
+        run: |
+          cd frontend
+          npm run start:ci &
+          npx wait-on http://localhost:3000
+          cd ../cypress
+          npm ci
+          npx cypress run
+      
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: test-results
+          path: |
+            frontend/coverage
+            cypress/videos
+            cypress/screenshots
+  
+  build:
+    name: Build and Push Docker Images
+    needs: test
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')) || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      
+      - name: Login to Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          # Fixed: Using GITHUB_TOKEN instead of direct secrets
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/logware-frontend
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=long
+      
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.DOCKER_REGISTRY }}/logware-frontend:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKER_REGISTRY }}/logware-frontend:buildcache,mode=max
+  
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v1
+      
+      # Fixed: Using kubeconfig action instead of direct secret access
+      - name: Setup Kubernetes context
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        id: setcontext
+      
+      - name: Deploy to Staging
+        env:
+          ENVIRONMENT: staging
+          DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
+          VERSION: ${{ github.sha }}
+        run: |
+          cd kubernetes
+          chmod +x deploy.sh
+          ./deploy.sh staging
+      
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/logware-frontend -n logware --timeout=180s
+          kubectl rollout status deployment/logware-backend -n logware --timeout=180s
+  
+  deploy-production:
+    name: Deploy to Production
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v1
+      
+      # Fixed: Using kubeconfig action instead of direct secret access
+      - name: Setup Kubernetes context
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        id: setcontext
+      
+      - name: Deploy to Production
+        env:
+          ENVIRONMENT: production
+          DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
+          VERSION: ${GITHUB_REF#refs/tags/}
+        run: |
+          cd kubernetes
+          chmod +x deploy.sh
+          ./deploy.sh production
+      
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/logware-frontend -n logware --timeout=180s
+          kubectl rollout status deployment/logware-backend -n logware --timeout=180s
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
